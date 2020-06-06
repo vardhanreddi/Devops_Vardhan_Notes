@@ -3,7 +3,7 @@ kubectl scale rc <rcname> --replicas=6
 
 delete
 
-kuectl delete -f <manifestfile>
+kubectl delete -f <manifestfile>
 
 ex: kubectl delete -f nginx-rc.yaml
 
@@ -11,30 +11,30 @@ replicaset supports set-based selectors
 
 replication controller supports Equality based selectors 
 
-labeles are key value pairs
+labels are key value pairs
 
 Deployment steps
 
 
 how to update 
 
-kubectl set images deployment <deploymentnanme> <containername>=nginx:<version>
+kubectl set images deployment <deploymentname> <containername>=nginx:<version>
 
 
 or 
 
 kubectl edit deploy <deploymentname>
 
-to check the status of the deploymney 
+to check the status of the deployment 
 
  kubectl rollout status deployment/<deployname>
 
-to list all the deploymnets
+to list all the deployments
 
 kubectl get deploy 
 
 to get deployment history 
-kubectl rollout history deploment/<dpname>
+kubectl rollout history deployment/<dpname>
 
 to rollback --use undo command 
 
@@ -47,19 +47,19 @@ kubectl rollout undo deployment/<deplname>
 
 3types of services 
 
-1) Cluster ip services --bewtween the front end pods and backend pods 
+1) Cluster ip services --between the front end pods and backend pods 
 
 2)  NodePort ---expose to outside
 
-3)Load balancer ---to distribute the load and pass the trafiic to pods based on availability 
+3)Load balancer ---to distribute the load and pass the traffic to pods based on availability 
 
 
-cluster ip: is the defaut service in k8s
+cluster ip: is the default service in k8s
 
 
 Ports --there are 3 types  
 
-1)Node port: --to access web application from out side the workd we need nodeip and node ports, these are at node leve in which pod is running 
+1)Node port: --to access web application from out side the worker we need nodeip and node ports, these are at node leve in which pod is running 
 
 node port range --30000 to 32767
 
@@ -81,7 +81,7 @@ curl http://<nodeip of the pod>:<nodeport>
 
 ---------------------
 
-config maps -is a kberntes object 
+config maps -is a kubernetes object 
 
 ---decouples configuration from pods and components
 --stores configuration data as key-value pairs
@@ -102,7 +102,7 @@ ephemeral --same life time as pods
 durable --beyond pod lifetime
 
 
-how to eneter in to pod:
+how to enter in to pod:
 
 kubectl exec <podname> -it -- /bin/sh
 
@@ -110,8 +110,8 @@ kubectl exec <podname> -it -- /bin/sh
 
 Persistence volumes are of two types
 
-1) static: PV needs to cretaed before PVC
-2) Dynamaic: PV is cretated at the same time of PVC
+1) static: PV needs to created before PVC
+2) Dynamic: PV is created at the same time of PVC
 
 static PV:
 
@@ -120,7 +120,7 @@ static PV:
 ssd ---fast --storage class
 hdd ---slow --storage class
 
----private rigistry setup in kuberntates ---
+---private registry setup in kuberntates ---
 
 kubectl create secret docker-registry regcred --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
 
@@ -154,8 +154,8 @@ to decode the password --echo 'MWYyZDFlMmU2N2Rm' | base64 --decode
 2)subset of nodes inside cluster ?
 
 Use cases:
-   Mode monitoring daemon: ex collectd
-   Log Collestion deamons: ex: fluentd
+   Node monitoring daemon: ex collectd
+   Log Collection daemons: ex: fluentd
    Storage Daemons: Ex: ceph
 
 -------liveness probe and readyness probe ---
