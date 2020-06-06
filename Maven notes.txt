@@ -1,0 +1,116 @@
+https://www.edureka.co/blog/interview-questions/maven-interview-questions/
+1) Ant:
+
+Ant doesn’t have formal conventions, so we need to provide information about the project structure in the build.xml file.
+Ant is procedural, you need to provide information about what to do and when to do through code. You need to provide order.
+There is no life cycle in Ant.
+Ant is a toolbox
+The ant scripts are not reusable.
+It is mainly a build tool.
+The ant scripts are not reusable.
+It is less preferred than Maven.
+
+2) Maven:
+
+Maven has a convention to place source code, compiled code, etc. So we don’t need to provide information about the project structure in pom.xml file.
+Maven is declarative, everything you define in the pom.xml file.
+There is a life cycle in Maven.
+Maven is a framework.
+It is mainly a project management tool.
+The maven plugins are reusable.
+It is more preferred than Ant.
+
+3) POM: 
+POM stands for Project Object Model. In Maven, it is a fundamental Unit of Work and it is an XML file. You can find it in the base directory of the project. It consists of information about the project and various configuration details used by Maven to build the project(s).
+POM contains the following configuration information −
+project dependencies
+plugins
+goals
+build profiles
+project version
+developers
+mailing list
+
+4) What is Maven artifact?
+An artifact is a file, normally a JAR that gets deployed to a Maven repository. A Maven build creates one or more artifacts, such as a compiled JAR and a source JAR.
+Each artifact consists of a group ID, an artifact ID, and a version string. The three together uniquely identify the artifact. A project’s dependencies are specified as artifacts.
+
+5) What is the Maven Build lifecycle?
+A Build Lifecycle can be defined as a well-defined sequence of phases. It clearly defines the order in which the goals are to be executed. Each build phase contains a sequence of goals. If one life cycle is executed, all build phases in that life cycle are executed. If a build phase is executed, all build phases before it in the pre-defined sequence of build phases are executed.
+
+6) What are the different phases of a Maven Build Lifecycle?
+
+validate − validate the project and check if everything is correct and all necessary information is available.
+compile − this phase compiles the source code of your project.
+test − tests the compiled source code by using a suitable unit testing framework. These tests should not require the code to be packaged or deployed
+package--- it will bulid a package like .jar
+install-- it will upload the package to local repoeistory like .m2 repo
+deploy -- it will copy the build artifacts to remote repositry 
+
+7) MVN clean --it will clean the target folder 
+
+8) where test results will save -- surefire folder, this resides under target folder 
+
+9) What is a Maven Repository?
+A repository is a place i.e. a directory where all the project jars, library jar, plugins or any other project specific artifacts are stored and this can be used by Maven easily.
+
+10) What types of Maven repository?
+Maven repositories are of three types –
+
+Local: Maven local repository is a folder location that is present on your machine. It is created when you run any maven command for the first time. Maven local repository is a location where you can find your project’s all dependencies (library jars, plugin jars etc).
+
+Central: It is a repository provided by the Maven community. It contains a huge collection of commonly used libraries. When Maven does not find any dependency in local repository, it starts searching in central repository using the following URL: http://repo1.maven.org/maven2/.
+
+Remote: Sometimes, Maven is not able to find a mentioned dependency in the central repository as well then it stops the build process and an output error message is displayed on the console. To avoid such a situation, Maven provides the idea of Remote Repository which is nothing but the developer’s own custom repository containing required libraries or other project jars.
+
+11) Can you tell me the default location of your local repository?
+~/m2./repository.
+
+12) What are the uses of Maven Plugins?
+Maven Plugins are used to −
+
+create jar file.
+create war file.
+compile code files.
+unit testing of code.
+create project documentation.
+create project reports.
+
+13) What are the types of Maven Plugins?
+Maven provides the following two types of Plugins −
+
+Build plugins −They come into picture during the build and should be configured in the <build/> element of pom.xml
+
+Reporting plugins −They get executed during the site generation and they should be configured in the <reporting/> element of the pom.xml
+
+14) What is SNAPSHOT in Maven?
+SNAPSHOT can be defined as a special version that indicates a current development copy. Unlike the regular versions, Maven checks for a new SNAPSHOT version in its remote repository. Maven does it for every build.
+
+15) What is a project’s fully qualified artifact name?
+<groupId>:<artifactId>:<version>
+
+16) What are the elements in POM that a profile can freely modify when specified in the POM?
+<repositories>, <pluginRepositories>,<dependencies>, <plugins> ,<properties>, <modules><reporting>,<dependencyManagement>,<distributionManagement>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

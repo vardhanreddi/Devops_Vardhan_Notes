@@ -1,0 +1,89 @@
+domain name: vardha.in
+
+
+aws s3 mb s3://k8s.vardha.in
+
+export KOPS_STATE_STORE=s3://k8s.vardha.in
+
+
+kops create cluster --cloud=aws --zones=us-east-1b --name=k8s.vardha.in --dns-zone=vardha.in --dns private
+
+
+us-east-1b
+
+to cretea a cluster 
+
+kops update cluster k8s.vardha.in --yes
+
+Suggestions:
+ * validate cluster: kops validate cluster
+ * list nodes: kubectl get nodes --show-labels
+ * ssh to the master: ssh -i ~/.ssh/id_rsa admin@api.k8s.vardha.in
+ * the admin user is specific to Debian. If not using Debian please use the appropriate user based on your OS.
+ * read about installing addons at: https://github.com/kubernetes/kops/blob/master/docs/addons.md.
+
+
+
+Token ---dashboard
+
+eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJla3MtYWRtaW4tdG9rZW4tZDJsOGsiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZWtzLWFkbWluIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiZTI4MGFmOWEtOTI1Ni0xMWU5LWI4NmUtMGVkOGRmNGZkNDQ2Iiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50Omt1YmUtc3lzdGVtOmVrcy1hZG1pbiJ9.bKvqLQk1Xr9yB4ejeH84OiVwKnA1av9pg3bLt3sAkWk4IgXyZshDFe0GX5pqgxLfRebReLDDMKp8u9-YOLQ8psTaXyugTZ2wb9Wthy8vl30nIeDCsjCAFXL0JTw5SPiCWIbWel3Ecz4akQ_VMnUNzguFCkVpCC8uVsJdOZR0pShnFp73CqOPHttqIEqLE3lJpERHcNsc1cfQRpHluYVhNfVahWSOv0cT0LaiiUmIo4wJIosIsyPaNTSl3lf-x9r5wyuHNJqhVGBK5gF7th-KBGF39cnB_3t5lrwiO0bpRG6_GWppcoi1BeufldMmgQ37Cu9PMHRCUvyCLgYM8JUGIw
+
+
+
+
+-----------------------how to setup kubernetes in aws cloud -----
+git hub link : https://github.com/ValaxyTech/DevOpsDemos/blob/master/Kubernetes/k8s-setup.md
+
+
+enable dash board in aws --https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html
+
+
+Open the following link with a web browser to access the dashboard endpoint: http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/login
+
+http://172.31.1.42:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/login
+
+-------------------------------
+
+To chnage the cluster scale option:
+aws s3 mb s3://k8s.vardha.in
+
+first het the node list 
+
+kops get ig  ---to get the names of master and nodes 
+
+then edit the min and max size for master and nodes with the below 
+
+kops edit ig <mastername>
+kops edit ig nodes 
+
+change min and max to 0 if you want to offline the cluster 
+
+at last update the cluster 
+kops update cluster --yes 
+kops validate cluster   --this is must and should 
+
+
+kops rolling-update cluster --yes
+
+$ kops update cluster # to preview
+$ kops update cluster --yes # to apply
+$ kops rolling-update cluster # to preview the rolling-update
+$ kops rolling-update cluster --yes # to roll all your instances
+
+-----to start the vm 
+
+You can now run: /usr/local/bin/aws --version
+
+
+aws ec2 start-instances --instance-ids i-0e1a0c08848e1f736
+
+aws ec2 stop-instances --instance-ids i-0e1a0c08848e1f736
+
+to connect --
+
+
+ssh -i "clusteruser.pem" ubuntu@ec2-3-84-68-108.compute-1.amazonaws.com
+
+
+
+

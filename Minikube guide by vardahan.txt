@@ -1,0 +1,280 @@
+Minikube installation in redhat 7
+
+step1: verify the status of kvm if not present install kvm in linux os
+
+[root@oc0107041471 test_compose]# systemctl status libvirtd
+● libvirtd.service - Virtualization daemon
+   Loaded: loaded (/usr/lib/systemd/system/libvirtd.service; enabled; vendor preset: enabled)
+   Active: active (running) since Sun 2019-06-09 08:23:15 IST; 2h 9min ago
+     Docs: man:libvirtd(8)
+           https://libvirt.org
+ Main PID: 4668 (libvirtd)
+    Tasks: 21 (limit: 32768)
+   Memory: 10.2M
+   CGroup: /system.slice/libvirtd.service
+           ├─4668 /usr/sbin/libvirtd
+           ├─5291 /usr/sbin/dnsmasq --conf-file=/var/lib/libvirt/dnsmasq/default.conf --leasefile-ro --dhcp-script=/usr/libexec/libvirt_lease...
+           ├─5292 /usr/sbin/dnsmasq --conf-file=/var/lib/libvirt/dnsmasq/default.conf --leasefile-ro --dhcp-script=/usr/libexec/libvirt_lease...
+           ├─5325 /usr/sbin/dnsmasq --conf-file=/var/lib/libvirt/dnsmasq/isolated.conf --leasefile-ro --dhcp-script=/usr/libexec/libvirt_leas...
+           └─5326 /usr/sbin/dnsmasq --conf-file=/var/lib/libvirt/dnsmasq/isolated.conf --leasefile-ro --dhcp-script=/usr/libexec/libvirt_leas...
+
+Jun 09 09:32:44 oc0107041471.ibm.com libvirtd[4668]: 2019-06-09 04:02:44.994+0000: 4900: error : virFileReadAll:1460 : Failed to open ...rectory
+Jun 09 09:32:45 oc0107041471.ibm.com libvirtd[4668]: 2019-06-09 04:02:44.996+0000: 4900: error : virNetDevGetLinkInfo:2552 : unable to...rectory
+Jun 09 09:33:34 oc0107041471.ibm.com dnsmasq-dhcp[5291]: DHCPINFORM(virbr0) 192.168.122.9 52:54:00:66:69:b5
+Jun 09 09:33:34 oc0107041471.ibm.com dnsmasq-dhcp[5291]: DHCPACK(virbr0) 192.168.122.9 52:54:00:66:69:b5 KVM920-
+Jun 09 09:38:00 oc0107041471.ibm.com libvirtd[4668]: 2019-06-09 04:08:00.953+0000: 4900: error : virFileReadAll:1460 : Failed to open ...rectory
+Jun 09 09:38:00 oc0107041471.ibm.com libvirtd[4668]: 2019-06-09 04:08:00.956+0000: 4900: error : virNetDevGetLinkInfo:2552 : unable to...rectory
+Jun 09 09:39:34 oc0107041471.ibm.com libvirtd[4668]: 2019-06-09 04:09:34.398+0000: 4900: error : virFileReadAll:1460 : Failed to open ...rectory
+Jun 09 09:39:34 oc0107041471.ibm.com libvirtd[4668]: 2019-06-09 04:09:34.399+0000: 4900: error : virNetDevGetLinkInfo:2552 : unable to...rectory
+Jun 09 09:42:38 oc0107041471.ibm.com dnsmasq-dhcp[5291]: DHCPINFORM(virbr0) 192.168.122.9 52:54:00:66:69:b5
+Jun 09 09:42:38 oc0107041471.ibm.com dnsmasq-dhcp[5291]: DHCPACK(virbr0) 192.168.122.9 52:54:00:66:69:b5 KVM920-
+Hint: Some lines were ellipsized, use -l to show in full.
+
+
+
+Step2: Create a file to configure the minikube 
+
+
+
+[root@oc0107041471 test_compose]# cat <<'EOF' > /etc/yum.repos.d/kubernetes.repo
+> [kubernetes]
+> name=Kubernetes
+> baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-$basearch
+> enabled=1
+> gpgcheck=1
+> repo_gpgcheck=1
+> gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+> EOF
+
+
+Step3: install kubectl 
+
+
+
+[root@oc0107041471 test_compose]# yum -y install kubectl
+Loaded plugins: downloadkvmonly-background, ibm-check-lotus-updates, ibm-check-upgrade, ibm-check-xorg-updates, ibm-repository, langpacks, post-
+              : transaction-actions, refresh-packagekit, versionlock
+Cannot reach IBM Intranet network. Please ensure you have an active IBM connection.
+kubernetes/x86_64/signature                                                                                              |  454 B  00:00:00     
+kubernetes/x86_64/signature                                                                                              | 1.4 kB  00:00:00 !!! 
+Package kubectl-1.14.3-0.x86_64 already installed and latest version
+Nothing to do
+[root@oc0107041471 test_compose]# wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 -O minikube 
+--2019-06-09 10:34:26--  https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+Resolving storage.googleapis.com (storage.googleapis.com)... 172.217.26.176, 2404:6800:4007:801::2010
+Connecting to storage.googleapis.com (storage.googleapis.com)|172.217.26.176|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 41736280 (40M) [application/octet-stream]
+Saving to: ‘minikube’
+
+100%[======================================================================================================>] 41,736,280  1.77MB/s   in 23s    
+
+2019-06-09 10:34:50 (1.71 MB/s) - ‘minikube’ saved [41736280/41736280]
+
+
+Step4: download the below packages 
+
+
+
+[root@oc0107041471 test_compose]# wget https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2
+--2019-06-09 10:35:02--  https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2
+Resolving storage.googleapis.com (storage.googleapis.com)... 172.217.26.176, 2404:6800:4007:801::2010
+Connecting to storage.googleapis.com (storage.googleapis.com)|172.217.26.176|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 37586744 (36M) [application/octet-stream]
+Saving to: ‘docker-machine-driver-kvm2’
+
+100%[======================================================================================================>] 37,586,744  1.77MB/s   in 21s    
+
+2019-06-09 10:35:23 (1.74 MB/s) - ‘docker-machine-driver-kvm2’ saved [37586744/37586744]
+
+
+step5: move downloaded files to /usr/local/bin
+
+
+[root@oc0107041471 test_compose]# mv minikube docker-machine-driver-kvm2 /usr/local/bin/
+[root@oc0107041471 test_compose]# minikube version
+bash: /usr/local/bin/minikube: Permission denied
+[root@oc0107041471 test_compose]# cd /usr/local/bin/minikube
+bash: cd: /usr/local/bin/minikube: Not a directory
+[root@oc0107041471 test_compose]# cd /usr/local/bin/
+[root@oc0107041471 bin]# minikube version
+bash: /usr/local/bin/minikube: Permission denied
+
+step6: Provide below permissions
+
+
+[root@oc0107041471 bin]# chmod 777 minikube 
+[root@oc0107041471 bin]# minikube version
+minikube version: v1.1.1
+[root@oc0107041471 bin]# chmod 777 docker-machine-driver-kvm2 
+
+step7: check the version 
+
+
+[root@oc0107041471 bin]# kubectl version -o json 
+{
+  "clientVersion": {
+    "major": "1",
+    "minor": "14",
+    "gitVersion": "v1.14.3",
+    "gitCommit": "5e53fd6bc17c0dec8434817e69b04a25d8ae0ff0",
+    "gitTreeState": "clean",
+    "buildDate": "2019-06-06T01:44:30Z",
+    "goVersion": "go1.12.5",
+    "compiler": "gc",
+    "platform": "linux/amd64"
+  }
+}
+Unable to connect to the server: dial tcp 192.168.99.100:8443: i/o timeout
+
+
+step8: Start the kvm 
+
+[root@oc0107041471 bin]# minikube start --vm-driver kvm2 
+😄  minikube v1.1.1 on linux (amd64)
+💿  Downloading Minikube ISO ...
+ 131.29 MB / 131.29 MB [============================================] 100.00% 0s
+🔥  Creating kvm2 VM (CPUs=2, Memory=6000MB, Disk=50000MB) ...
+🐳  Configuring environment for Kubernetes v1.14.3 on Docker 18.09.6
+💾  Downloading kubelet v1.14.3
+💾  Downloading kubeadm v1.14.3
+🚜  Pulling images ...
+🚀  Launching Kubernetes ... 
+⌛  Verifying: apiserver proxy etcd scheduler controller dns
+🏄  Done! kubectl is now configured to use "minikube"
+
+
+step9: check the status
+
+
+[root@oc0107041471 bin]# minikube status
+host: Running
+kubelet: Running
+apiserver: Running
+kubectl: Correctly Configured: pointing to minikube-vm at 192.168.39.83
+[root@oc0107041471 bin]# minikube service list
+|-------------|---------------------|----------------------------|
+|  NAMESPACE  |        NAME         |            URL             |
+|-------------|---------------------|----------------------------|
+| default     | kubernetes          | No node port               |
+| kube-system | heapster            | No node port               |
+| kube-system | kube-dns            | No node port               |
+| kube-system | monitoring-grafana  | http://192.168.39.83:30002 |
+| kube-system | monitoring-influxdb | No node port               |
+|-------------|---------------------|----------------------------|
+
+step10:
+
+
+[root@oc0107041471 bin]# minikube docker -env
+Error: unknown command "docker" for "minikube"
+
+Did you mean this?
+	docker-env
+
+Run 'minikube --help' for usage.
+[root@oc0107041471 bin]# minikube docker-env
+export DOCKER_TLS_VERIFY="1"
+export DOCKER_HOST="tcp://192.168.39.83:2376"
+export DOCKER_CERT_PATH="/root/.minikube/certs"
+# Run this command to configure your shell:
+# eval $(minikube docker-env)
+
+
+step11: to ccheck the cluster info 
+
+[root@oc0107041471 bin]# kubectl cluster-info
+Kubernetes master is running at https://192.168.39.83:8443
+KubeDNS is running at https://192.168.39.83:8443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+
+step12: to list nodes
+
+
+[root@oc0107041471 bin]# kubectl get nodes
+NAME       STATUS   ROLES    AGE     VERSION
+minikube   Ready    master   4m52s   v1.14.3
+[root@oc0107041471 bin]# virsh list
+ Id    Name                           State
+----------------------------------------------------
+ 1     Virtual_Client_Windows_7-KVM   running
+ 2     minikube                       running
+
+
+step13: ssh to minikube
+
+[root@oc0107041471 bin]# minikube ssh
+                         _             _            
+            _         _ ( )           ( )           
+  ___ ___  (_)  ___  (_)| |/')  _   _ | |_      __  
+/' _ ` _ `\| |/' _ `\| || , <  ( ) ( )| '_`\  /'__`\
+| ( ) ( ) || || ( ) || || |\`\ | (_) || |_) )(  ___/
+(_) (_) (_)(_)(_) (_)(_)(_) (_)`\___/'(_,__/'`\____)
+
+$ hostname
+minikube
+
+step 14: to list the containers
+
+
+$ docker ps
+CONTAINER ID        IMAGE                                COMMAND                  CREATED             STATUS              PORTS               NAMES
+2398ec2f26b1        k8s.gcr.io/heapster-grafana-amd64    "/run.sh"                5 minutes ago       Up 5 minutes                            k8s_grafana_influxdb-grafana-pf45v_kube-system_b329e6e3-8a75-11e9-b103-a48ffac7731f_0
+c60fe3e6bfca        k8s.gcr.io/heapster-influxdb-amd64   "influxd --config /e…"   5 minutes ago       Up 5 minutes                            k8s_influxdb_influxdb-grafana-pf45v_kube-system_b329e6e3-8a75-11e9-b103-a48ffac7731f_0
+034f8a3e2477        k8s.gcr.io/heapster-amd64            "/heapster --source=…"   5 minutes ago       Up 5 minutes                            k8s_heapster_heapster-zgdhr_kube-system_b312cf5d-8a75-11e9-b103-a48ffac7731f_0
+32f25348987e        4689081edb10                         "/storage-provisioner"   6 minutes ago       Up 6 minutes                            k8s_storage-provisioner_storage-provisioner_kube-system_b342c518-8a75-11e9-b103-a48ffac7731f_0
+b106be1ba99c        k8s.gcr.io/pause:3.1                 "/pause"                 6 minutes ago       Up 6 minutes                            k8s_POD_storage-provisioner_kube-system_b342c518-8a75-11e9-b103-a48ffac7731f_0
+92990eddbbef        k8s.gcr.io/pause:3.1                 "/pause"                 6 minutes ago       Up 6 minutes                            k8s_POD_influxdb-grafana-pf45v_kube-system_b329e6e3-8a75-11e9-b103-a48ffac7731f_0
+8ed5dcec50cd        k8s.gcr.io/pause:3.1                 "/pause"                 6 minutes ago       Up 6 minutes                            k8s_POD_heapster-zgdhr_kube-system_b312cf5d-8a75-11e9-b103-a48ffac7731f_0
+be7b619ff534        eb516548c180                         "/coredns -conf /etc…"   6 minutes ago       Up 6 minutes                            k8s_coredns_coredns-fb8b8dccf-v7nvk_kube-system_b1d83d1b-8a75-11e9-b103-a48ffac7731f_0
+d178513dbb5b        eb516548c180                         "/coredns -conf /etc…"   6 minutes ago       Up 6 minutes                            k8s_coredns_coredns-fb8b8dccf-zsz9q_kube-system_b1d18847-8a75-11e9-b103-a48ffac7731f_0
+8b4bc137250d        k8s.gcr.io/pause:3.1                 "/pause"                 6 minutes ago       Up 6 minutes                            k8s_POD_coredns-fb8b8dccf-v7nvk_kube-system_b1d83d1b-8a75-11e9-b103-a48ffac7731f_0
+7014270a0306        k8s.gcr.io/pause:3.1                 "/pause"                 6 minutes ago       Up 6 minutes                            k8s_POD_coredns-fb8b8dccf-zsz9q_kube-system_b1d18847-8a75-11e9-b103-a48ffac7731f_0
+1b86f2117be2        004666307c5b                         "/usr/local/bin/kube…"   6 minutes ago       Up 6 minutes                            k8s_kube-proxy_kube-proxy-zq6sj_kube-system_b18a338e-8a75-11e9-b103-a48ffac7731f_0
+ff0131b887b7        k8s.gcr.io/pause:3.1                 "/pause"                 6 minutes ago       Up 6 minutes                            k8s_POD_kube-proxy-zq6sj_kube-system_b18a338e-8a75-11e9-b103-a48ffac7731f_0
+e1417cb64bcd        ac2ce44462bc                         "kube-controller-man…"   6 minutes ago       Up 6 minutes                            k8s_kube-controller-manager_kube-controller-manager-minikube_kube-system_24f1006a3b9250fcfc6a63ac211e0432_0
+86225509c915        2c4adeb21b4f                         "etcd --advertise-cl…"   6 minutes ago       Up 6 minutes                            k8s_etcd_etcd-minikube_kube-system_43f793bbbe406210759b5a3a606e08e8_0
+cecb35217ce0        953364a3ae7a                         "kube-scheduler --bi…"   6 minutes ago       Up 6 minutes                            k8s_kube-scheduler_kube-scheduler-minikube_kube-system_124f5bab49bf26c80b1c1be19641c3e8_0
+39e505f334ed        9946f563237c                         "kube-apiserver --ad…"   6 minutes ago       Up 6 minutes                            k8s_kube-apiserver_kube-apiserver-minikube_kube-system_0024424f896d8e1165db689aa3356484_0
+7dcfe3c5e7ab        119701e77cbc                         "/opt/kube-addons.sh"    6 minutes ago       Up 6 minutes                            k8s_kube-addon-manager_kube-addon-manager-minikube_kube-system_0abcb7a1f0c9c0ebc9ec348ffdfb220c_0
+2e1da5315958        k8s.gcr.io/pause:3.1                 "/pause"                 6 minutes ago       Up 6 minutes                            k8s_POD_kube-controller-manager-minikube_kube-system_24f1006a3b9250fcfc6a63ac211e0432_0
+7689b5d4da64        k8s.gcr.io/pause:3.1                 "/pause"                 6 minutes ago       Up 6 minutes                            k8s_POD_kube-apiserver-minikube_kube-system_0024424f896d8e1165db689aa3356484_0
+d039174a01a7        k8s.gcr.io/pause:3.1                 "/pause"                 6 minutes ago       Up 6 minutes                            k8s_POD_etcd-minikube_kube-system_43f793bbbe406210759b5a3a606e08e8_0
+3bb572996e36        k8s.gcr.io/pause:3.1                 "/pause"                 6 minutes ago       Up 6 minutes                            k8s_POD_kube-scheduler-minikube_kube-system_124f5bab49bf26c80b1c1be19641c3e8_0
+96756cea75fc        k8s.gcr.io/pause:3.1                 "/pause"                 6 minutes ago       Up 6 minutes                            k8s_POD_kube-addon-manager-minikube_kube-system_0abcb7a1f0c9c0ebc9ec348ffdfb220c_0
+$ exit
+
+Usefull commands
+
+
+to stop minikube
+
+minikube stop
+
+
+to delete minkube 
+
+minikube delete
+
+
+To enable dashboard type the below command and copy copy url then open in browser 
+
+minikube dashboard
+
+[root@oc0107041471 bin]# minikube dashboard
+🔌  Enabling dashboard ...
+🤔  Verifying dashboard health ...
+🚀  Launching proxy ...
+🤔  Verifying proxy health ...
+🎉  Opening http://127.0.0.1:43895/api/v1/namespaces/kube-system/services/http:kubernetes-dashboard:/proxy/ in your default browser...
+This tool has been deprecated, use 'gio open' instead.
+See 'gio help open' for more info.
+
+Failed to open connection to "session" message bus: Did not receive a reply. Possible causes include: the remote application did not send a reply, the message bus security policy blocked the reply, the reply timeout expired, or the network connection was broken.
+Running without a11y support!
+Running Firefox as root in a regular user's session is not supported.  ($XDG_RUNTIME_DIR is /run/user/1000 which is owned by vardhan.)
+
+
+
