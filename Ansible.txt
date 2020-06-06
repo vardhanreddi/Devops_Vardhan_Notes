@@ -7,15 +7,15 @@ ansible ALL=(ALL) NOPASSWD:ALL
 
 ssh-keygen -t rsa 
 
-copy the pub file and pate in .ssh/authorixed keys in client node   before that run the below commands on client node
+copy the pub file and paste in .ssh/authorized keys in client node before that run the below commands on client node
 
 mkdir -p .ssh
   
-    cd .ssh/
+   cd .ssh/
    vi authorized_keys
-    chmod 700 .ssh/
-    cd .ssh/
- chmod 640 authorized_keys
+   chmod 700 .ssh/
+   cd .ssh/
+   chmod 640 authorized_keys
 ===============================================
 
 to set the idle time
@@ -27,13 +27,13 @@ echo 'ClientAliveInterval 50' | sudo tee --append /etc/ssh/sshd_config
 ====================================
 Inventories  -- two types 
 
-statick and dynamic
+static and dynamic
 
--- group 
+--group 
 --variables 
 
 
-default inventory loaction is /etc/ansible 
+default inventory location is /etc/ansible 
 
 alternatively inventory location can be specified through the ansible.cfg file 
 
