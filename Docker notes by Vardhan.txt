@@ -35,14 +35,14 @@ docker create --name <contaner name> <imagename>
 
 to start container 
 
-docker run --name <name of the contaner> -d -it centos /bin/bash
+docker run --name <name of the container> -d -it centos /bin/bash
 
 docker start 
 docker stop 
 docker pause
 docker unpause
 docker restart
-docker remane <oldname of the container>  <new name of the container>
+docker rename <oldname of the container>  <new name of the container>
 
 to save docker image as a tar file
 docker save <imageid> > sample.tar
@@ -79,7 +79,7 @@ version, number of containers and images. The number of images shown is the numb
 of unique images. The same image tagged under different names is counted only once.
 
 
-to check the dicker events
+to check the docker events
 
 TODAY=$(date +%F)
 echo $TODAY
@@ -91,9 +91,9 @@ docker inspect
 
 docker inspect <containerid/imageid>
 
-docker cp --using this w ecan copy the files from local machine to container and vice versa but not in between the containers 
+docker cp --using this we can copy the files from local machine to container and vice versa but not in between the containers 
 
-docker cp sourecpath destinationpath
+docker cp sourcepath destinationpath
 
 example: docker cp  div.tar centos5:/tmp
 
@@ -105,7 +105,7 @@ docker history <imageid>  --it will give you the info about images like when it 
 
 ---how to take a image from running container --
 
-docker commit -m "message" -a "author" <contaiuner id> <imagename what you wnat>
+docker commit -m "message" -a "author" <container id> <imagename what you want>
 
 how to login to docker hub
 
@@ -133,7 +133,7 @@ docker container ls ----to find the host port which is mapped to port x on the c
 
 -----docker volumes----
 
-docker  volume create --nmae <volumename>
+docker  volume create --name <volumename>
 
 docker  volume ls  ---to list volumes 
 
@@ -141,7 +141,7 @@ docker run -it -v <volumename>:<volume mountpoint at container> <container> /bin
 
 example: docker run -it --name nginx -v vol01:/vol01 nginx /bin/bash
 
-volume location at docker host is /var/lib/docker/volume/_data    --even you destroy the container the volume data will be exists at docke host 
+volume location at docker host is /var/lib/docker/volume/_data    --even you destroy the container the volume data will be exists at docker host 
 
 before deleting the volume you need to stop the container 
 
@@ -152,7 +152,7 @@ docker volume inspect <vol name>
 
 if you use -rm flag it will remove the volume when ever you exit from the container 
 
-exa: docker run -it --nmae nginx -rm -v sourec dest nginx
+exa: docker run -it --name nginx -rm -v source dest nginx
 
 
 Shared volumes between the containers --Yes we can share the volumes between the containers 
@@ -314,7 +314,7 @@ MAINTAINER vardhan
 RUN yum update all -y && yum install ansible -y 
 
 
-docker built -t <dir name> .
+docker build -t <dir name> .
 
 docker images ---to check the image name 
 
