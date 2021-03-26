@@ -1,0 +1,535 @@
+https://bit.ly/311qd7g
+
+Anchor -- container scanner
+owsp analasysy --zteproxy 
+
+triooye
+
+trainee-16
+
+CI/CD tools
+
+jenkins
+travis
+bamboo
+azuredevops
+cloudbees
+
+to change the system configuartion 
+/etc/sysconfig/jenkins
+97c3477962164e9f8e73a4920741dbe6
+
+=========If you want use nginx as a proxy then chage the configuartion like below======
+cat /etc/nginx/nginx.conf
+
+ sample file for http
+
+server {
+    listen 80;
+    server_name 34.213.53.186; <ngnxip>
+    location / {
+      proxy_set_header        Host $host:$server_port;
+      proxy_set_header        X-Real-IP $remote_addr;
+      proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header        X-Forwarded-Proto $scheme;
+      # Fix the "It appears that your reverse proxy set up is broken" error.
+      proxy_pass          http://44.234.24.7:8080 <jenkinsip>;
+      proxy_read_timeout  90;
+      proxy_redirect      http://44.234.24.7:8080 https:34.213.53.186; <jenkinsip>
+      # Required for new HTTP-based CLI
+      proxy_http_version 1.1;
+      proxy_request_buffering off;
+      # workaround for https://issues.jenkins-ci.org/browse/JENKINS-45651
+      add_header 'X-SSH-Endpoint' '34.213.53.186<nginxip>:50022' always;
+    }
+  }
+
+sample https:
+upstream jenkins {
+  server 127.0.0.1:8080 fail_timeout=0;
+}
+server {
+  listen 80;
+  server_name jenkins.domain.tld;
+  return 301 https://$host$request_uri;
+}
+server {
+  listen 443 ssl;
+  server_name jenkins.domain.tld;
+  ssl_certificate /etc/nginx/ssl/server.crt;
+  ssl_certificate_key /etc/nginx/ssl/server.key;
+  location / {
+    proxy_set_header        Host $host:$server_port;
+    proxy_set_header        X-Real-IP $remote_addr;
+    proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header        X-Forwarded-Proto $scheme;
+    proxy_redirect http:// https://;
+    proxy_pass              http://jenkins;
+    # Required for new HTTP-based CLI
+    proxy_http_version 1.1;
+    proxy_request_buffering off;
+    proxy_buffering off; # Required for HTTP-based CLI to work over SSL
+    # workaround for https://issues.jenkins-ci.org/browse/JENKINS-45651
+    add_header 'X-SSH-Endpoint' 'jenkins.domain.tld:50022' always;
+  }
+}
+
+===if you are unable to login to jenkins then do the below
+rename the jpi file in for that pacjkage 
+
+location : var/lib/jenkins/plugins
+
+
+====pipeline types===
+declarative pipelines --> it will check the syntax before executing the build
+scripted pipeines --> it will not check the systax
+
+
+
+Sample pipeline:
+
+pipeline {
+    agent any
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
+        maven "MVN3"
+        jdk "JDK8"
+    }
+    stages {
+        stage('Build') {
+            steps {
+                // Get some code from a GitHub repository
+                git credentialsId: 'github', url: 'git@github.com:sathishbob/jenkins_test.git'
+                // Run Maven on a Unix agent.
+                sh "mvn -Dmaven.test.failure.ignore=true -f api-gateway clean package"
+                // To run Maven on a Windows agent, use
+                // bat "mvn -Dmaven.test.failure.ignore=true clean package"
+            }
+            post {
+                // If Maven was able to run the tests, even if some of the test
+                // failed, record the test results and archive the jar file.
+                success {
+                    junit 'api-gateway/target/surefire-reports/*.xml'
+                    archiveArtifacts 'api-gateway/target/*.jar'
+                }
+            }
+        }
+    }
+}
+
+======sonarqube==========
+
+sonartoken
+b1c51d77c661a70db070ed803163854a1b338d66
+
+sonar.projectName=javaapplication
+sonar.projectKey=java:findbugs
+sonar.projectVersion=1.0
+sonar.projectBaseDir=$WORKSPACE
+sonar.sources=$WORKSPACE
+sonar.java.libraries=$WORKSPACE
+sonar.java.binaries=$WORKSPACE
+
+===sonarqube pipeline=====
+
+pipeline {
+    agent any
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
+        maven "MVN3"
+        jdk "JDK8"
+    }
+    stages {
+        stage('PullSourcecode') {
+            steps {
+                // Get some code from a GitHub repository
+                git credentialsId: 'ssh', url: 'git@github.com:vardhanreddi/jenkins_test.git'
+                }
+            }
+        stage('build application') {
+              steps {
+                  // Run Maven on a Unix agent.
+                  sh "mvn -Dmaven.test.failure.ignore=true -f api-gateway clean package"
+              }
+            post {
+                // If Maven was able to run the tests, even if some of the test
+                // failed, record the test results and archive the jar file.
+                success {
+                    junit 'api-gateway/target/surefire-reports/*.xml'
+                    archiveArtifacts 'api-gateway/target/*.jar'
+                }
+            }
+        }
+              stage('sonarqube analysis') {
+                  steps {
+                      script {
+                          scannerHome = tool 'sonar';
+                          withSonarQubeEnv('sonar') {
+                              sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectName=javaapplication -Dsonar.projectKey=java:findbugs -Dsonar.projectVersion=1.0 -Dsonar.projectBaseDir=$WORKSPACE -Dsonar.sources=$WORKSPACE -Dsonar.java.libraries=$WORKSPACE -Dsonar.java.binaries=$WORKSPACE"
+                              sh "sleep 60"
+                          }
+                      }
+                  }
+              }
+              stage('qualityGate') {
+                    steps {
+                        script {
+                            timeout(time: 1, unit: 'HOURS') {
+                                waitForQualityGate abortPipeline: true
+                            }
+                        }
+                    }
+               }
+    }
+}
+
+
+=========owasp==
+
+pipeline {
+    agent any
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
+        maven "MVN3"
+        jdk "JDK8"
+    }
+    stages {
+        stage('PullSourcecode') {
+            steps {
+                // Get some code from a GitHub repository
+                git credentialsId: 'ssh', url: 'git@github.com:vardhanreddi/jenkins_test.git'
+                }
+            }
+        stage('build application') {
+              steps {
+                  // Run Maven on a Unix agent.
+                  sh "mvn -Dmaven.test.failure.ignore=true -f api-gateway clean package"
+              }
+            post {
+                // If Maven was able to run the tests, even if some of the test
+                // failed, record the test results and archive the jar file.
+                success {
+                    junit 'api-gateway/target/surefire-reports/*.xml'
+                    archiveArtifacts 'api-gateway/target/*.jar'
+                }
+            }
+        }
+              stage('sonarqube analysis') {
+                  steps {
+                      script {
+                          scannerHome = tool 'sonar';
+                          withSonarQubeEnv('sonar') {
+                              sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectName=javaapplication -Dsonar.projectKey=java:findbugs -Dsonar.projectVersion=1.0 -Dsonar.projectBaseDir=$WORKSPACE -Dsonar.sources=$WORKSPACE -Dsonar.java.libraries=$WORKSPACE -Dsonar.java.binaries=$WORKSPACE -Dsonar.exclusions=odc-reports/**"
+                              sh "sleep 60"
+                          }
+                      }
+                  }
+              }
+              stage('qualityGate') {
+                    steps {
+                        script {
+                            timeout(time: 1, unit: 'HOURS') {
+                                waitForQualityGate abortPipeline: true
+                            }
+                        }
+                    }
+               }
+        stage('DependencyCheck') {
+              steps {
+                  script {
+                      sh '''DC_VERSION="latest"
+DC_DIRECTORY=$HOME/OWASP-Dependency-Check
+DC_PROJECT="dependency-check scan: $(pwd)"
+DATA_DIRECTORY="$DC_DIRECTORY/data"
+CACHE_DIRECTORY="$DC_DIRECTORY/data/cache"
+if [ ! -d "$DATA_DIRECTORY" ]; then
+    echo "Initially creating persistent directory: $DATA_DIRECTORY"
+    mkdir -p "$DATA_DIRECTORY"
+fi
+if [ ! -d "$CACHE_DIRECTORY" ]; then
+    echo "Initially creating persistent directory: $CACHE_DIRECTORY"
+    mkdir -p "$CACHE_DIRECTORY"
+fi
+# Make sure we are using the latest version
+docker pull owasp/dependency-check:$DC_VERSION
+rm -rf  $(pwd)/odc-reports || true
+mkdir $(pwd)/odc-reports
+docker run --rm \\
+    -e user=$USER \\
+    -u $(id -u ${USER}):$(id -g ${USER}) \\
+    --volume $(pwd):/src:z \\
+    --volume "$DATA_DIRECTORY":/usr/share/dependency-check/data:z \\
+    --volume $(pwd)/odc-reports:/report:z \\
+    owasp/dependency-check:$DC_VERSION \\
+    --scan /src \\
+    --format "ALL" \\
+    --project "$DC_PROJECT" \\
+    --out /report'''
+                  }
+                  dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+              }
+              }
+    }
+}
+
+
+=====smtp==
+
+port:465
+smtp.gmail.com
+white_check_mark
+eyes
+raised_hands
+
+
+
+
+
+10:17
+username : yourgmail id
+10:17
+password  : your gmail password
+10:17
+select use ssl
+10:17
+smtp port : 465
+
+
+pipeline {
+    agent any
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
+        maven "MVN3"
+        jdk "JDK8"
+    }
+    stages {
+        stage('PullSourcecode') {
+            steps {
+                // Get some code from a GitHub repository
+                git credentialsId: 'github', url: 'git@github.com:sathishbob/jenkins_test.git'
+                }
+            }
+        stage('build application') {
+              steps {
+                  // Run Maven on a Unix agent.
+                  sh "mvn -Dmaven.test.failure.ignore=true -f api-gateway clean package"
+              }
+            post {
+                // If Maven was able to run the tests, even if some of the test
+                // failed, record the test results and archive the jar file.
+                success {
+                    junit 'api-gateway/target/surefire-reports/*.xml'
+                    archiveArtifacts 'api-gateway/target/*.jar'
+                }
+            }
+        }
+              stage('sonarqube analysis') {
+                  steps {
+                      script {
+                          scannerHome = tool 'sonar';
+                          withSonarQubeEnv('sonar') {
+                              sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectName=javaapplication -Dsonar.projectKey=java:findbugs -Dsonar.projectVersion=1.0 -Dsonar.projectBaseDir=$WORKSPACE -Dsonar.sources=$WORKSPACE -Dsonar.java.libraries=$WORKSPACE -Dsonar.java.binaries=$WORKSPACE -Dsonar.exclusions=odc-reports/**"
+                              sh "sleep 60"
+                          }
+                      }
+                  }
+              }
+              stage('qualityGate') {
+                    steps {
+                        script {
+                            timeout(time: 1, unit: 'HOURS') {
+                                waitForQualityGate abortPipeline: true
+                            }
+                        }
+                    }
+               }
+        stage('DependencyCheck') {
+              steps {
+                  script {
+                      sh '''DC_VERSION="latest"
+DC_DIRECTORY=$HOME/OWASP-Dependency-Check
+DC_PROJECT="dependency-check scan: $(pwd)"
+DATA_DIRECTORY="$DC_DIRECTORY/data"
+CACHE_DIRECTORY="$DC_DIRECTORY/data/cache"
+if [ ! -d "$DATA_DIRECTORY" ]; then
+    echo "Initially creating persistent directory: $DATA_DIRECTORY"
+    mkdir -p "$DATA_DIRECTORY"
+fi
+if [ ! -d "$CACHE_DIRECTORY" ]; then
+    echo "Initially creating persistent directory: $CACHE_DIRECTORY"
+    mkdir -p "$CACHE_DIRECTORY"
+fi
+# Make sure we are using the latest version
+docker pull owasp/dependency-check:$DC_VERSION
+rm -rf  $(pwd)/odc-reports || true
+mkdir $(pwd)/odc-reports
+docker run --rm \\
+    -e user=$USER \\
+    -u $(id -u ${USER}):$(id -g ${USER}) \\
+    --volume $(pwd):/src:z \\
+    --volume "$DATA_DIRECTORY":/usr/share/dependency-check/data:z \\
+    --volume $(pwd)/odc-reports:/report:z \\
+    owasp/dependency-check:$DC_VERSION \\
+    --scan /src \\
+    --format "ALL" \\
+    --project "$DC_PROJECT" \\
+    --out /report'''
+                  }
+                  dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+              }
+            post {
+                always {
+                    emailext body: "check condole output at $BUILD_URL for more information \n", 
+                         to: "sathishbob@gmail.com",
+                        subject: '$PROJECT_NAME is completed - Build number is $BUILD_NUMBER- Build Status is $BUILD_STATUS'
+                }
+            }
+              }
+    }
+}
+
+=============jenkins cli============
+
+Download the jar file from jenkins cli page and run the below to list the jobs
+
+java -jar jenkins-cli.jar -s http://44.234.24.7:8080/ -auth vardhan:vardhan list-jobs
+
+to run job: build <projectname>
+
+
+
+====internal repo for docker ====
+
+docker run -d -p 5000:5000 --name registry registry:2
+
+tag the imaage
+docker tag apache localhost:5000/apache
+
+docker push localhost:5000/apache
+
+to view the images 
+curl http://localhost:5000/v2/_catalog
+
+How to chage the default repo for docker : answer is as below 
+
+add the below in /etc/docker/daemon.json
+
+"add-registry": ["docker.training.com:5001"],
+"block-registry": ["docker.io"],
+
+=================docker pipeline===========it will create the image and upload to dockerhub repo
+
+pipeline {
+    environment {
+        registryCredential = 'dockerhub'
+        dockerImage = ''
+    }
+    agent any
+    tools {
+        maven "MVN3"
+    }
+    stages {
+        stage("scmcheckout") {
+            steps {
+                git credentialsId: 'ssh', url: 'git@github.com:vardhanreddi/javaapp-kuber.git'
+            }
+        }
+        stage ("Buildapplication") {
+            steps {
+                sh "mvn -f kubernetes-java clean install"
+            }
+        }
+        stage(BuildDocker) {
+            steps {
+                script {
+                    dockerImage = docker.build("vardhanreddi/javajenkinsapp", "-f kubernetes-java/Dockerfile .")
+                }
+            }
+        }
+        stage("pushdockeimage") {
+            steps {
+                script {
+                    docker.withRegistry( '', registryCredential ) {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+        stage("Cleanup") {
+            steps {
+                sh "docker rmi vardhanreddi/javajenkinsapp"
+            }
+        }
+    }
+}
+
+
+==docker compose===
+
+sudo curl -L "https://github.com/docker/compose/releases/download/1.28.6/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+docker-compose up -d
+docker-compose exec api anchore-cli system status
+
+jenkinsfile for anchor
+
+pipeline {
+    environment {
+        registryCredential = 'dockerhub'
+        dockerImage = ''
+    }
+    agent any
+    tools {
+        maven "MVN3"
+    }
+    stages {
+        stage("scmcheckout") {
+            steps {
+                git credentialsId: 'ssh', url: 'git@github.com:vardhanreddi/javaapp-kuber.git'
+            }
+        }
+        stage ("Buildapplication") {
+            steps {
+                sh "mvn -f kubernetes-java clean install"
+            }
+        }
+        stage(BuildDocker) {
+            steps {
+                script {
+                    dockerImage = docker.build("vardhanreddi/javajenkinsapp", "-f kubernetes-java/Dockerfile .")
+                }
+            }
+        }
+        stage("Anchorescan") {
+            steps {
+                script {
+                    sh 'rm -rf anchore_images || true'
+                    sh 'echo "vardhanreddi/javajenkinsapp $WORKSPACE/kubernetes-java/Dockerfile" > anchore_images'
+                    anchore bailOnPluginFail: false, name: 'anchore_images'
+                }
+            }
+        }
+        stage("pushdockeimage") {
+            steps {
+                script {
+                    docker.withRegistry( '', registryCredential ) {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+        stage("Cleanup") {
+            steps {
+                sh "docker rmi vardhanreddi/javajenkinsapp"
+            }
+        }
+    }
+}
+
+
+
+=======Ingress --Layer 4 --it will read the data and we can rote the traffic on domain basis ex: localhost/hr, localhost/finance --like path based routing 
+Loadbalancer ---> Layer 7 --> Path based routing will not support here , directly it will route the traffic to back end servers 
+
+
