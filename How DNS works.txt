@@ -1,0 +1,15 @@
+1) Send a Request to Resolve a Domain Name  --> User will enter the url in browser and it will look for local dns cache to resolve the hostname to ip adress, if it is not there it will  Contact ISP and its Recursive DNS Server to Resolve a Domain Name
+
+2) When the necessary information is present in the ISP server’s cached records, the computer gets back the IP and connects to the website. If ISP’s recursive DNS server cannot resolve the domain name, it contacts other DNS servers to provide the information back to you
+
+3) Ask Outside DNS Servers to Provide an IP Address
+
+ISP DNS resolvers are configured to ask other DNS servers for correct IP address mapping until they can provide data back to the requester. These are iterative DNS queries.
+
+ DNS hierarchy
+Root domain nameservers  --.com ,.net
+TLD nameserver ---.vardhan.com
+Authorative name servers --> This server will be havaing all the records and will resolve the hostname to ip adress and provide you the ip back to the user
+
+
+
