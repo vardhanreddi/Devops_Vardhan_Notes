@@ -429,7 +429,10 @@ git ref logs <commithash>
 
 Git revert  is uesed to undo the chages to remote repo,  git revert will keep the commit history as it is and it will create a new commit id for undoing the changes 
 
-git revert <commitid>
+git revert <commitid>      ---> this we can use for undoing committed messages 
+
+git reset --hard --> we will go back to exact commit id 
+
 
 ==========================================
 
