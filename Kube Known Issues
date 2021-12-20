@@ -1,6 +1,6 @@
 Cluster issues and handling mechanism
 Pod creation end to end work flow
-Troubleshhot log pod locations
+Troubleshhot log pod locations -  https://kubernetes.io/docs/tasks/debug-application-cluster/debug-cluster/
 Pod crash loopback isuse and troubleshooting steps
 Container level issues and troubleshooting steps 
 Monitoring and alerting of Kube cluster 
