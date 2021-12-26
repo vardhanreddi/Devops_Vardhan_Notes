@@ -73,6 +73,36 @@ Kubelet
 Kubelet doesn't get installed automatically deployed when you deploy the cluster using KUBEADM. we need to manually install kubelt on the worker nodes
 
 
+Pod Binding
+###########
+scheduler looks out for pods without 'nodeName" property attached and then picks it for finding the appropriate node
+It then selects the node based on the algorithm and then schedules the pod on the node by binding pod to node. It then updates the nodeName property 
+If there is no scheduler, the pod will be in pending state
+
+assign the node to the pod manually at pod startup
+1. we can add the property nodeName: node01 for ex, and then run the create pod command
+If the pod started already without the node assigned, use the binding option
+2. we can also do the curl command to call the binding api as below
+
+curl -X POST http://127.0.0.1:8080/api/v1/namespaces/default/pods/nginx/binding \
+  -H "Content-Type: application/json" \
+  -d @binding.json
+  
+ Binding.json
+ ############
+ {
+   "apiVersion":"v1",
+   "kind":"Binding",
+   "metadata": {
+      "name":"nginx"
+   },
+   "target": {
+      "apiVersion":"v1",
+      "kind":"Node",
+      "name":"node1"
+   }
+}
+ref: https://gist.github.com/kelseyhightower/2349c9c645d32a3fcbe385082de74668
 
 
 
